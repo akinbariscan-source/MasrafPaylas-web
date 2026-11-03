@@ -1,6 +1,6 @@
 // Masraf Paylaş – çevrimdışı önbellek.
 // Uygulamayı güncellediğinizde aşağıdaki sürüm numarasını artırın (v1 → v2 ...).
-const CACHE = 'masraf-paylas-v1';
+const CACHE = 'masraf-paylas-v2';
 const FILES = [
   './',
   './index.html',
@@ -9,6 +9,8 @@ const FILES = [
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
   './icons/apple-touch-icon.png',
+  './lib/jspdf.umd.min.js',
+  './lib/pdf-fonts.js',
   './fonts/bricolage-grotesque-latin-600-normal.woff2',
   './fonts/bricolage-grotesque-latin-700-normal.woff2',
   './fonts/bricolage-grotesque-latin-ext-600-normal.woff2',

@@ -6,7 +6,25 @@
 <title>Masraf Paylaş</title>
 <meta name="description" content="Seyahat masraflarını girin, kimin kime ne kadar ödeyeceğini hesaplayın. İnternetsiz çalışır.">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0f766e">
+<meta name="theme-color" content="#f1f5f4">
+<script>
+// Tema: "auto" iken 07:00–19:00 açık, diğer saatlerde koyu
+(function () {
+  function apply() {
+    var pref = 'auto';
+    try { pref = localStorage.getItem('masraf-paylas-theme') || 'auto'; } catch (e) {}
+    var mode = pref;
+    if (pref === 'auto') { var h = new Date().getHours(); mode = (h >= 7 && h < 19) ? 'light' : 'dark'; }
+    document.documentElement.setAttribute('data-theme', mode);
+    var m = document.querySelector('meta[name="theme-color"]');
+    if (m) m.setAttribute('content', mode === 'dark' ? '#0d1716' : '#f1f5f4');
+  }
+  window.__applyTheme = apply;
+  apply();
+  setInterval(apply, 60000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) apply(); });
+})();
+</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Masraf Paylaş">
@@ -141,6 +159,10 @@ button { cursor: pointer; }
 .input-wrap.invalid { border-color: var(--neg); }
 .input-wrap input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 1rem; padding: 10px 0; }
 .input-wrap .suffix { color: var(--muted); font-weight: 600; }
+.cur-select { border: 0; background: var(--surface-2); color: var(--fg); font-weight: 600; border-radius: 8px; padding: 6px 4px; margin-right: -4px; cursor: pointer; }
+.rate-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.result-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.result-actions .btn { flex: 1; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
 
@@ -285,6 +307,7 @@ table.sum tr:last-child td { border-bottom: 0; }
     trash: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>',
     lock: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>',
     copy: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>',
+    pdf: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>',
     info: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>',
   };
 
@@ -296,8 +319,35 @@ table.sum tr:last-child td { border-bottom: 0; }
   const currencyLabel = (t) => t.currency === 'OTHER' ? `${symbolOf(t)} (Diğer)` : `${CURRENCIES[t.currency].symbol} ${CURRENCIES[t.currency].label}`;
   const totalOf = (t) => t.expenses.reduce((a, e) => a + e.cents, 0);
 
-  function money(t) {
-    const dec = decimalsOf(t), sym = symbolOf(t);
+  function money(t) { return makeMoney(symbolOf(t), decimalsOf(t)); }
+  // Masrafın girildiği para birimi ('' = seyahatin kendi para birimi)
+  function curMoney(t, code) {
+    if (!code) return money(t);
+    const c = CURRENCIES[code] || CURRENCIES.EUR;
+    return makeMoney(c.symbol, c.decimals);
+  }
+  const CUR_CODES = ['TRY', 'EUR', 'USD', 'GBP', 'JPY'];
+  function parseRate(s) {
+    s = String(s || '').replace(/\s/g, '').replace(',', '.');
+    if (!/^\d+(\.\d+)?$/.test(s)) return null;
+    const v = parseFloat(s);
+    return v > 0 ? v : null;
+  }
+  const rateText = (v) => String(v).replace('.', ',');
+  // Formdaki tutarın seyahat para birimindeki karşılığı (kuruş); geçersizse null
+  function formCents(t) {
+    const f = S.f;
+    const om = curMoney(t, f.cur);
+    const orig = om.parse(f.amount);
+    if (orig == null) return null;
+    if (!f.cur) return orig;
+    const rate = parseRate(f.rate);
+    if (rate == null) return null;
+    const unit = decimalsOf(t) >= 2 ? 1 : 100;
+    const c = Math.round(orig * rate / unit) * unit;
+    return c > 0 ? c : null;
+  }
+  function makeMoney(sym, dec) {
     const nf = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
     const fmt = (c) => nf.format(c / 100) + ' ' + sym;
     return {
@@ -427,7 +477,7 @@ table.sum tr:last-child td { border-bottom: 0; }
     view: 'trips', tripId: null,
     dialog: null,         // 'newTrip' | 'editTrip' | 'confirmClose' | {deleteTrip:id}
     editingId: null,
-    f: { date: '', payer: null, amount: '', note: '', for: [] },
+    f: { date: '', payer: null, amount: '', note: '', for: [], cur: '', rate: '' },
     errors: false,
     personName: '',
   };
@@ -441,7 +491,7 @@ table.sum tr:last-child td { border-bottom: 0; }
     store.trips[i] = copy;
     persist(copy);
   }
-  function resetForm() { S.editingId = null; S.f = { date: '', payer: null, amount: '', note: '', for: [] }; S.errors = false; }
+  function resetForm() { S.editingId = null; S.f = { date: '', payer: null, amount: '', note: '', for: [], cur: '', rate: '' }; S.errors = false; }
 
   // ---------- Bildirim ----------
   let toastTimer = null;
@@ -472,7 +522,7 @@ table.sum tr:last-child td { border-bottom: 0; }
 
   function viewTrips() {
     const trips = store.trips;
-    let h = `<header class="top"><div class="titles"><h1>Seyahatlerim</h1><div class="sub">${statusBadge()}</div></div>
+    let h = `<header class="top"><div class="titles"><h1>Seyahatlerim</h1><div class="sub">${statusBadge()}<button class="btn btn-text" data-act="theme" style="min-height:28px;padding:0 6px;font-size:.8rem">${themeLabel()}</button></div></div>
       <button class="btn btn-primary" data-act="newTrip">${ICON.plus}Yeni seyahat</button></header>`;
     if (store.loadingNote) h += `<div class="note">${ICON.info}<span class="grow">Kayıtlı seyahatler henüz alınamadı. Bağlantı gelince liste kendiliğinden güncellenecek.</span></div><div style="height:12px"></div>`;
     if (!trips.length) {
@@ -502,6 +552,11 @@ table.sum tr:last-child td { border-bottom: 0; }
     return h;
   }
 
+  function themeLabel() {
+    let p = 'auto'; try { p = localStorage.getItem('masraf-paylas-theme') || 'auto'; } catch (e) {}
+    return { auto: 'Tema: saate göre', light: 'Tema: açık', dark: 'Tema: koyu' }[p] || 'Tema: saate göre';
+  }
+
   function backupCard() {
     return `<div style="height:18px"></div><section class="card"><h2>Yedek</h2>
       <p class="hint">Veriler yalnızca bu cihazda duruyor. Telefon değiştirirken ya da uygulamayı silmeden önce yedek alın.</p>
@@ -527,7 +582,10 @@ table.sum tr:last-child td { border-bottom: 0; }
     const m = money(t);
     const f = S.f;
     const allOn = t.people.length > 0 && t.people.every((p) => f.for.includes(p));
-    const amountCents = m.parse(f.amount);
+    const amountCents = formCents(t);
+    const om = curMoney(t, f.cur);
+    const curOptions = [`<option value=""${!f.cur ? ' selected' : ''}>${esc(m.sym)}${t.currency !== 'OTHER' ? ' ' + t.currency : ''}</option>`]
+      .concat(CUR_CODES.filter((c) => c !== t.currency).map((c) => `<option value="${c}"${f.cur === c ? ' selected' : ''}>${CURRENCIES[c].symbol} ${c}</option>`)).join('');
     const dateBad = f.date && !validDate(f.date);
     let h = `<header class="top">
       <button class="icon-btn" data-act="home" aria-label="Seyahatlerim">${ICON.back}</button>
@@ -556,10 +614,14 @@ table.sum tr:last-child td { border-bottom: 0; }
             ${dateBad && S.errors ? '<p class="error">Tarihi GG.AA.YYYY olarak girin (örn. 14.10.2026).</p>' : ''}
           </div>
           <div class="field"><label for="fAmount">Ne kadar ödedi? *</label>
-            <div class="input-wrap${S.errors && amountCents == null ? ' invalid' : ''}"><input id="fAmount" class="num" inputmode="decimal" placeholder="${m.dec === 0 ? 'örn. 1500' : 'örn. 12,50'}" value="${esc(f.amount)}" autocomplete="off"><span class="suffix">${esc(m.sym)}</span></div>
-            ${S.errors && amountCents == null ? '<p class="error">Geçerli bir tutar girin.</p>' : ''}
+            <div class="input-wrap${S.errors && amountCents == null ? ' invalid' : ''}"><input id="fAmount" class="num" inputmode="decimal" placeholder="${om.dec === 0 ? 'örn. 1500' : 'örn. 12,50'}" value="${esc(f.amount)}" autocomplete="off"><select id="fCur" class="cur-select" aria-label="Para birimi">${curOptions}</select></div>
+            ${S.errors && amountCents == null ? `<p class="error">${f.cur && parseRate(f.rate) == null ? 'Kuru girin.' : 'Geçerli bir tutar girin.'}</p>` : ''}
           </div>
         </div>
+        ${f.cur ? `<div class="field"><label for="fRate">Kur</label>
+          <div class="rate-row"><span class="num">1 ${esc(CURRENCIES[f.cur].symbol)} =</span>
+            <div class="input-wrap${S.errors && parseRate(f.rate) == null ? ' invalid' : ''}" style="flex:1;max-width:180px"><input id="fRate" class="num" inputmode="decimal" placeholder="örn. 1,07" value="${esc(f.rate)}" autocomplete="off"><span class="suffix">${esc(m.sym)}</span></div></div>
+          <p class="hint" id="convHint" style="font-variant-numeric:tabular-nums">${convHintText(t)}</p></div>` : ''}
         <div class="field"><span class="label">Kim ödedi? *</span>
           ${t.people.length ? `<div class="chips">${t.people.map((p) => `<button class="chip${f.payer === p ? ' on' : ''}" data-act="payer" data-name="${esc(p)}" aria-pressed="${f.payer === p}">${f.payer === p ? ICON.check : ''}${esc(p)}</button>`).join('')}</div>` : '<p class="error">Önce yukarıdan kişi ekleyin.</p>'}
           ${S.errors && !f.payer ? '<p class="error">Ödeyen kişiyi seçin.</p>' : ''}
@@ -571,7 +633,7 @@ table.sum tr:last-child td { border-bottom: 0; }
           <div class="label-row"><span class="label">Kimin için ödedi? *</span>${t.people.length ? `<button class="btn btn-text" data-act="allFor">${allOn ? 'Hiçbiri' : 'Hepsi'}</button>` : ''}</div>
           <div class="chips">${t.people.map((p) => { const on = f.for.includes(p); return `<button class="chip${on ? ' on' : ''}" data-act="for" data-name="${esc(p)}" aria-pressed="${on}">${on ? ICON.check : ''}${esc(p)}</button>`; }).join('')}</div>
           ${S.errors && !f.for.length ? '<p class="error">En az bir kişi seçin.</p>' : ''}
-          <p class="hint num" id="perPerson">${perPersonText(t)}</p>
+          <p class="hint" id="perPerson" style="font-variant-numeric:tabular-nums">${perPersonText(t)}</p>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           ${S.editingId ? '<button class="btn btn-outline" data-act="cancelEdit">Vazgeç</button>' : ''}
@@ -590,7 +652,7 @@ table.sum tr:last-child td { border-bottom: 0; }
           <span class="m" style="display:block">${e.date ? esc(e.date) + ' · ' : ''}Ödeyen: ${esc(e.payer)}</span>
           <span class="m" style="display:block">Kimin için: ${esc(e.for.join(', '))}</span>
         </span>
-        <span class="amt num">${esc(m.fmt(e.cents))}</span>`;
+        <span class="amt num" style="text-align:right">${esc(m.fmt(e.cents))}${e.orig ? `<span class="m" style="display:block;font-weight:500">${esc(curMoney(t, e.orig.cur).fmt(e.orig.cents))} × ${esc(rateText(e.orig.rate))}</span>` : ''}</span>`;
       if (t.closed) {
         h += `<div class="expense" style="padding-right:16px">${inner}</div>`;
       } else {
@@ -608,9 +670,15 @@ table.sum tr:last-child td { border-bottom: 0; }
     return h;
   }
 
+  function convHintText(t) {
+    if (!S.f.cur) return '';
+    const c = formCents(t);
+    return c == null ? 'Tutar ve kur girildiğinde seyahat para birimindeki karşılığı burada görünür.' : `Hesaba ${money(t).fmt(c)} olarak girer.`;
+  }
+
   function perPersonText(t) {
     const m = money(t);
-    const c = m.parse(S.f.amount);
+    const c = formCents(t);
     if (c == null || !S.f.for.length) return '';
     return `Kişi başı pay: ${m.fmt(Math.round(c / S.f.for.length))} (${S.f.for.length} kişi)`;
   }
@@ -625,17 +693,23 @@ table.sum tr:last-child td { border-bottom: 0; }
     let h = `<header class="top">
       <button class="icon-btn" data-act="backToTrip" aria-label="Seyahate dön">${ICON.back}</button>
       <div class="titles"><h1>Hesap Sonucu</h1><div class="sub">${esc(t.title)}</div></div>
+    </header><div class="stack">
+    <div class="result-actions">
       <button class="btn btn-tonal" data-act="copyResult">${ICON.copy}Kopyala</button>
-    </header><div class="stack">`;
+      <button class="btn btn-primary" data-act="makePdf">${ICON.pdf}PDF oluştur</button>
+    </div>`;
     h += `<section class="receipt">
       <div class="kicker">Toplam harcama</div>
       <div class="grand num">${esc(m.fmt(r.total))}</div>
       <div class="hint">${r.count} masraf · ${r.summaries.length} kişi · ${esc(currencyLabel(t))}</div>
       <hr class="dash">
-      <div class="kicker" style="margin-bottom:4px">Kim kime ne kadar ödeyecek?</div>
-      ${r.net.length ? debtRows(r.net, m, true) : '<p>Borç yok, herkes ödeşmiş görünüyor.</p>'}
+      <div class="kicker" style="margin-bottom:4px">En az transferle kapatma</div>
+      ${r.minT.length ? debtRows(r.minT, m, true) : '<p>Borç yok, herkes ödeşmiş görünüyor.</p>'}
+      <p class="hint" style="margin-top:8px">Bu ${r.minT.length} ödeme yapıldığında herkes ödeşmiş olur.</p>
       <hr class="dash">
-      <p class="hint">Karşılıklı borçlar mahsup edildi. Bu ${r.net.length} ödeme yapıldığında herkes ödeşmiş olur.</p>
+      <div class="kicker" style="margin-bottom:4px">Kim kime ne kadar ödeyecek? (masraf bazında)</div>
+      ${r.net.length ? debtRows(r.net, m, false) : '<p>Borç yok.</p>'}
+      <p class="hint" style="margin-top:8px">Herkes, kimin masrafından borçlandıysa ona öder; karşılıklı borçlar mahsup edildi. Bu yolla ${r.net.length} ödeme gerekir.</p>
     </section>
     <div style="height:6px"></div>`;
     h += `<section class="card"><h2>Kişi bazında özet</h2><div class="table-wrap"><table class="sum">
@@ -643,7 +717,6 @@ table.sum tr:last-child td { border-bottom: 0; }
       ${r.summaries.map((s) => `<tr><td><b>${esc(s.name)}</b></td><td class="num">${esc(m.fmt(s.paid))}</td><td class="num">${esc(m.fmt(s.share))}</td><td class="num ${s.balance > 0 ? 'pos' : s.balance < 0 ? 'neg' : ''}">${esc(m.signed(s.balance))}</td></tr>`).join('')}
       </tbody></table></div><p class="hint">Bakiye = ödediği − payına düşen. Artı: alacaklı, eksi: borçlu.</p></section>`;
     h += `<section class="card"><h2>Brüt borçlar (mahsup öncesi)</h2><p class="hint">Soldaki kişinin, sağdakinin ödediği masraflardan doğan borcu.</p><div>${debtRows(r.gross, m, false)}</div></section>`;
-    h += `<section class="card"><h2>Alternatif: En az transferle kapatma</h2><p class="hint">Kimin kime ödediği önemli değilse aynı bakiyeler ${r.minT.length} transferle de kapanır.</p><div>${debtRows(r.minT, m, false)}</div></section>`;
     h += `<p class="hint" style="padding:0 4px">Yöntem: Her masraf, "kimin için" seçilen kişilere eşit bölünür. Listede olup masrafı ödemeyen herkes, kendi payı kadar ödeyene borçlanır. Kendi için yapılan masraf borç oluşturmaz.</p>`;
     h += '</div>';
     return h;
@@ -652,7 +725,9 @@ table.sum tr:last-child td { border-bottom: 0; }
   function resultText(t) {
     const m = money(t);
     const r = calculate(t.people, t.expenses, m.dec);
-    const lines = [`${t.title} – Masraf Paylaşım Hesabı`, `Toplam: ${m.fmt(r.total)} (${r.count} masraf)`, '', 'Kim kime ne kadar ödeyecek:'];
+    const lines = [`${t.title} – Masraf Paylaşım Hesabı`, `Toplam: ${m.fmt(r.total)} (${r.count} masraf)`, '', 'En az transferle kapatma:'];
+    r.minT.forEach((d) => lines.push(`• ${d.from} → ${d.to}: ${m.fmt(d.cents)}`));
+    lines.push('', 'Kim kime ne kadar ödeyecek (masraf bazında):');
     r.net.forEach((d) => lines.push(`• ${d.from} → ${d.to}: ${m.fmt(d.cents)}`));
     lines.push('', 'Kişi bazında bakiye:');
     r.summaries.forEach((s) => lines.push(`• ${s.name}: ${m.signed(s.balance)}`));
@@ -758,19 +833,24 @@ table.sum tr:last-child td { border-bottom: 0; }
     const t = trip(); if (!t) return;
     const m = money(t);
     const f = S.f;
-    const cents = m.parse(f.amount);
+    const cents = formCents(t);
     const dateOk = !f.date || validDate(f.date);
     if (!f.payer || cents == null || !f.for.length || !dateOk) { S.errors = true; render(); toast('Lütfen zorunlu alanları kontrol edin.'); return; }
     const e = { id: S.editingId || newId('e'), date: f.date || null, payer: f.payer, cents, note: f.note.trim() || null, for: t.people.filter((p) => f.for.includes(p)) };
+    if (f.cur) e.orig = { cur: f.cur, cents: curMoney(t, f.cur).parse(f.amount), rate: parseRate(f.rate) };
     const editing = !!S.editingId;
+    const lastCur = f.cur;
     updateTrip(t.id, (x) => {
       const i = x.expenses.findIndex((y) => y.id === e.id);
       if (i >= 0) x.expenses[i] = e; else x.expenses.push(e);
+      if (e.orig) x.rates = Object.assign({}, x.rates, { [e.orig.cur]: rateText(e.orig.rate) });
     });
     resetForm();
+    if (lastCur && !editing) { S.f.cur = lastCur; S.f.rate = (trip().rates || {})[lastCur] || ''; }
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
     render();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     toast(editing ? 'Masraf güncellendi.' : 'Masraf eklendi.');
-    const amt = document.getElementById('fAmount'); if (amt && !editing) amt.focus();
   }
 
   function importKatanya() {
@@ -785,6 +865,149 @@ table.sum tr:last-child td { border-bottom: 0; }
     S.tripId = t.id; S.view = 'trip'; resetForm();
     render();
     window.scrollTo(0, 0);
+  }
+
+  // ---------- PDF ----------
+  function loadScript(src) {
+    return new Promise((resolve, reject) => {
+      if (document.querySelector(`script[data-src="${src}"]`)) return resolve();
+      const s = document.createElement('script');
+      s.src = src; s.dataset.src = src; s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+  const isMobile = () => isIOS() || /android/i.test(navigator.userAgent);
+
+  async function makePdf(btn) {
+    const t = trip(); if (!t) return;
+    if (btn) { btn.disabled = true; btn.style.opacity = '.6'; }
+    try {
+      await loadScript('lib/jspdf.umd.min.js');
+      await loadScript('lib/pdf-fonts.js');
+      const file = buildPdf(t);
+      if (isMobile() && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try { await navigator.share({ files: [file], title: file.name }); } catch (e) { /* kullanıcı vazgeçti */ }
+      } else {
+        const url = URL.createObjectURL(file);
+        const a = document.createElement('a');
+        a.href = url; a.download = file.name; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+        toast('PDF indirildi.');
+      }
+    } catch (e) {
+      toast('PDF oluşturulamadı. Uygulamayı internet varken bir kez açıp tekrar deneyin.');
+    } finally {
+      if (btn && btn.isConnected) { btn.disabled = false; btn.style.opacity = ''; }
+    }
+  }
+
+  function buildPdf(t) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    doc.addFileToVFS('Fig-R.ttf', window.PDF_FONTS.regular); doc.addFont('Fig-R.ttf', 'Fig', 'normal');
+    doc.addFileToVFS('Fig-B.ttf', window.PDF_FONTS.bold); doc.addFont('Fig-B.ttf', 'Fig', 'bold');
+    const mm = money(t);
+    const fix = (s) => String(s).replace(/₺/g, 'TL').replace(/\u00a0|\u202f/g, ' ');
+    const fmt = (c) => fix(mm.fmt(c));
+    const signed = (c) => fix(mm.signed(c));
+    const r = calculate(t.people, t.expenses, mm.dec);
+    const W = 210, L = 18, R = W - 18, TOP = 18, BOTTOM = 280;
+    const TEAL = [15, 118, 110], INK = [20, 35, 33], MUTED = [85, 98, 95], LINE = [207, 220, 217];
+    let y = TOP;
+    const color = (c) => doc.setTextColor(c[0], c[1], c[2]);
+    const ensure = (h) => { if (y + h > BOTTOM) { doc.addPage(); y = TOP; } };
+    const hr = () => { doc.setDrawColor(LINE[0], LINE[1], LINE[2]); doc.setLineWidth(0.3); doc.line(L, y, R, y); };
+    const section = (title) => {
+      ensure(18); y += 6;
+      doc.setFont('Fig', 'bold'); doc.setFontSize(12.5); color(TEAL); doc.text(fix(title), L, y);
+      y += 3; hr(); y += 5.5;
+    };
+    const note = (s) => {
+      doc.setFont('Fig', 'normal'); doc.setFontSize(9); color(MUTED);
+      const lines = doc.splitTextToSize(fix(s), R - L);
+      ensure(lines.length * 4.2); doc.text(lines, L, y); y += lines.length * 4.2 + 1;
+    };
+    const debts = (list, bold) => {
+      if (!list.length) { note('Borç yok, herkes ödeşmiş görünüyor.'); return; }
+      for (const d of list) {
+        ensure(7);
+        doc.setFont('Fig', 'bold'); doc.setFontSize(11); color(INK);
+        doc.text(fix(d.from), L + 2, y);
+        doc.setFont('Fig', 'normal'); color(MUTED); doc.text('→', L + 22, y);
+        doc.setFont('Fig', 'bold'); color(INK); doc.text(fix(d.to), L + 30, y);
+        doc.setFont('Fig', bold ? 'bold' : 'normal'); doc.text(fmt(d.cents), R - 2, y, { align: 'right' });
+        y += 2.6; doc.setDrawColor(232, 238, 236); doc.setLineWidth(0.2); doc.line(L, y, R, y); y += 4.4;
+      }
+    };
+
+    // Başlık
+    doc.setFont('Fig', 'bold'); doc.setFontSize(20); color(INK);
+    doc.text(fix(t.title), L, y + 4); y += 11;
+    doc.setFont('Fig', 'normal'); doc.setFontSize(10); color(MUTED);
+    doc.text(fix(`Masraf Paylaşım Hesabı · ${today()} · ${currencyLabel(t)}`), L, y); y += 8;
+    // Toplam kutusu
+    doc.setFillColor(213, 239, 234); doc.roundedRect(L, y, R - L, 18, 3, 3, 'F');
+    doc.setFont('Fig', 'normal'); doc.setFontSize(9.5); color([11, 76, 70]); doc.text('TOPLAM HARCAMA', L + 5, y + 6.5);
+    doc.setFont('Fig', 'bold'); doc.setFontSize(16); doc.text(fmt(r.total), L + 5, y + 14);
+    doc.setFont('Fig', 'normal'); doc.setFontSize(10); doc.text(`${r.count} masraf · ${r.summaries.length} kişi`, R - 5, y + 14, { align: 'right' });
+    y += 24;
+
+    section('En az transferle kapatma');
+    debts(r.minT, true);
+    note(`Bu ${r.minT.length} ödeme yapıldığında herkes ödeşmiş olur.`);
+
+    section('Kim kime ne kadar ödeyecek? (masraf bazında)');
+    debts(r.net, false);
+    note(`Herkes, kimin masrafından borçlandıysa ona öder; karşılıklı borçlar mahsup edildi. Bu yolla ${r.net.length} ödeme gerekir.`);
+
+    section('Kişi bazında özet');
+    const cols = [L + 2, L + 70, L + 115, R - 2];
+    doc.setFont('Fig', 'bold'); doc.setFontSize(9); color(MUTED);
+    doc.text('KİŞİ', cols[0], y); doc.text('ÖDEDİĞİ', cols[1], y, { align: 'right' }); doc.text('PAYI', cols[2], y, { align: 'right' }); doc.text('BAKİYE', cols[3], y, { align: 'right' });
+    y += 6;
+    for (const s of r.summaries) {
+      ensure(7);
+      doc.setFontSize(10.5); doc.setFont('Fig', 'bold'); color(INK); doc.text(fix(s.name), cols[0], y);
+      doc.setFont('Fig', 'normal'); doc.text(fmt(s.paid), cols[1], y, { align: 'right' }); doc.text(fmt(s.share), cols[2], y, { align: 'right' });
+      doc.setFont('Fig', 'bold'); color(s.balance > 0 ? [4, 120, 87] : s.balance < 0 ? [180, 35, 24] : INK);
+      doc.text(signed(s.balance), cols[3], y, { align: 'right' });
+      y += 6.5;
+    }
+    note('Bakiye = ödediği − payına düşen. Artı: alacaklı, eksi: borçlu.');
+
+    section('Brüt borçlar (mahsup öncesi)');
+    debts(r.gross, false);
+
+    section(`Masraf listesi (${t.expenses.length})`);
+    const X = { no: L + 1, date: L + 9, note: L + 30, payer: L + 86, for: L + 103, amt: R - 1 };
+    doc.setFont('Fig', 'bold'); doc.setFontSize(8.5); color(MUTED);
+    doc.text('#', X.no, y); doc.text('TARİH', X.date, y); doc.text('AÇIKLAMA', X.note, y); doc.text('ÖDEYEN', X.payer, y); doc.text('KİMİN İÇİN', X.for, y); doc.text('TUTAR', X.amt, y, { align: 'right' });
+    y += 5.5;
+    t.expenses.forEach((e, i) => {
+      doc.setFont('Fig', 'normal'); doc.setFontSize(9);
+      const noteLines = doc.splitTextToSize(fix(e.note || '—'), X.payer - X.note - 3);
+      const forLines = doc.splitTextToSize(fix(e.for.join(', ')), X.amt - X.for - 26);
+      const extra = e.orig ? 1 : 0;
+      const n = Math.max(noteLines.length, forLines.length, 1 + extra);
+      ensure(n * 4 + 2.5);
+      color(MUTED); doc.text(String(i + 1), X.no, y); doc.text(fix(e.date || ''), X.date, y);
+      color(INK); doc.text(noteLines, X.note, y);
+      doc.setFont('Fig', 'bold'); doc.text(fix(e.payer), X.payer, y);
+      doc.setFont('Fig', 'normal'); doc.text(forLines, X.for, y);
+      doc.text(fmt(e.cents), X.amt, y, { align: 'right' });
+      if (e.orig) { doc.setFontSize(7.5); color(MUTED); doc.text(fix(`${curMoney(t, e.orig.cur).fmt(e.orig.cents)} × ${rateText(e.orig.rate)}`), X.amt, y + 3.6, { align: 'right' }); }
+      y += n * 4 + 1; doc.setDrawColor(232, 238, 236); doc.setLineWidth(0.2); doc.line(L, y - 2.2, R, y - 2.2); y += 1.5;
+    });
+    y += 2;
+    note('Yöntem: Her masraf, "kimin için" seçilen kişilere eşit bölünür. Listede olup masrafı ödemeyen herkes, kendi payı kadar ödeyene borçlanır. Kendi için yapılan masraf borç oluşturmaz.');
+
+    const pages = doc.getNumberOfPages();
+    for (let i = 1; i <= pages; i++) {
+      doc.setPage(i); doc.setFont('Fig', 'normal'); doc.setFontSize(8); color(MUTED);
+      doc.text(fix(`${t.title} · Masraf Paylaş`), L, 290); doc.text(`Sayfa ${i}/${pages}`, R, 290, { align: 'right' });
+    }
+    const safe = t.title.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'seyahat';
+    return new File([doc.output('blob')], `${safe}-hesap.pdf`, { type: 'application/pdf' });
   }
 
   async function copyResult() {
@@ -848,7 +1071,9 @@ table.sum tr:last-child td { border-bottom: 0; }
         const e = t.expenses.find((x) => x.id === el.dataset.id); if (!e) break;
         const m = money(t);
         S.editingId = e.id;
-        S.f = { date: e.date || '', payer: e.payer, amount: m.toInput(e.cents), note: e.note || '', for: e.for.slice() };
+        S.f = e.orig
+          ? { date: e.date || '', payer: e.payer, amount: curMoney(t, e.orig.cur).toInput(e.orig.cents), note: e.note || '', for: e.for.slice(), cur: e.orig.cur, rate: rateText(e.orig.rate) }
+          : { date: e.date || '', payer: e.payer, amount: m.toInput(e.cents), note: e.note || '', for: e.for.slice(), cur: '', rate: '' };
         S.errors = false;
         render();
         document.getElementById('formCard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -875,6 +1100,15 @@ table.sum tr:last-child td { border-bottom: 0; }
         S.view = 'result'; render(); window.scrollTo(0, 0); break;
       case 'backToTrip': S.view = 'trip'; render(); window.scrollTo(0, 0); break;
       case 'copyResult': copyResult(); break;
+      case 'makePdf': makePdf(el); break;
+      case 'theme': {
+        let p = 'auto'; try { p = localStorage.getItem('masraf-paylas-theme') || 'auto'; } catch (e) {}
+        const next = { auto: 'light', light: 'dark', dark: 'auto' }[p] || 'auto';
+        try { localStorage.setItem('masraf-paylas-theme', next); } catch (e) {}
+        if (window.__applyTheme) window.__applyTheme();
+        render();
+        break;
+      }
       case 'install': if (installEvent) { const ev = installEvent; ev.prompt(); ev.userChoice.finally(() => { installEvent = null; render(); }); } break;
       case 'exportBackup': exportBackup(); break;
       case 'importBackup': document.getElementById('backupFile').click(); break;
@@ -891,11 +1125,13 @@ table.sum tr:last-child td { border-bottom: 0; }
         el.value = v; S.f.date = v;
         break;
       }
-      case 'fAmount': {
+      case 'fAmount':
+      case 'fRate': {
         el.value = el.value.replace(/[^\d.,]/g, '');
-        S.f.amount = el.value;
-        const t = trip(); const pp = document.getElementById('perPerson');
+        if (el.id === 'fAmount') S.f.amount = el.value; else S.f.rate = el.value;
+        const t = trip(); const pp = document.getElementById('perPerson'); const ch = document.getElementById('convHint');
         if (t && pp) pp.textContent = perPersonText(t);
+        if (t && ch) ch.textContent = convHintText(t);
         break;
       }
       case 'fNote': S.f.note = el.value; break;
@@ -905,6 +1141,13 @@ table.sum tr:last-child td { border-bottom: 0; }
   });
   document.addEventListener('change', (ev) => {
     if (ev.target.id === 'tdCopy') S.td.copy = ev.target.checked;
+    if (ev.target.id === 'fCur') {
+      const t = trip();
+      S.f.cur = ev.target.value;
+      S.f.rate = S.f.cur ? ((t && t.rates && t.rates[S.f.cur]) || '') : '';
+      render();
+      const nxt = document.getElementById(S.f.cur && !S.f.rate ? 'fRate' : 'fAmount'); if (nxt) nxt.focus();
+    }
     if (ev.target.id === 'backupFile' && ev.target.files[0]) importBackup(ev.target.files[0]);
   });
 
@@ -948,7 +1191,7 @@ table.sum tr:last-child td { border-bottom: 0; }
   document.addEventListener('keydown', (ev) => {
     if (ev.key === 'Enter') {
       if (ev.target.id === 'personName') { ev.preventDefault(); addPerson(); }
-      else if (['fAmount', 'fNote', 'fDate'].includes(ev.target.id)) { ev.preventDefault(); submit(); }
+      else if (['fAmount', 'fNote', 'fDate', 'fRate'].includes(ev.target.id)) { ev.preventDefault(); submit(); }
       else if (ev.target.id === 'tdTitle' || ev.target.id === 'tdCustom') { ev.preventDefault(); saveTripDialog(); }
     } else if (ev.key === 'Escape' && S.dialog) { S.dialog = null; renderOverlay(); }
   });
