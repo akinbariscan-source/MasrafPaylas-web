@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Masraf Paylaş</title>
+<meta name="description" content="Seyahat masraflarını girin, kimin kime ne kadar ödeyeceğini hesaplayın. İnternetsiz çalışır.">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f766e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Masraf Paylaş">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<style>
+@font-face{font-family:"Bricolage Grotesque";font-weight:600;font-display:swap;src:url(fonts/bricolage-grotesque-latin-600-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Bricolage Grotesque";font-weight:600;font-display:swap;src:url(fonts/bricolage-grotesque-latin-ext-600-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Bricolage Grotesque";font-weight:700;font-display:swap;src:url(fonts/bricolage-grotesque-latin-700-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Bricolage Grotesque";font-weight:700;font-display:swap;src:url(fonts/bricolage-grotesque-latin-ext-700-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Figtree";font-weight:400;font-display:swap;src:url(fonts/figtree-latin-400-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Figtree";font-weight:400;font-display:swap;src:url(fonts/figtree-latin-ext-400-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Figtree";font-weight:500;font-display:swap;src:url(fonts/figtree-latin-500-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Figtree";font-weight:500;font-display:swap;src:url(fonts/figtree-latin-ext-500-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Figtree";font-weight:600;font-display:swap;src:url(fonts/figtree-latin-600-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Figtree";font-weight:600;font-display:swap;src:url(fonts/figtree-latin-ext-600-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Figtree";font-weight:700;font-display:swap;src:url(fonts/figtree-latin-700-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Figtree";font-weight:700;font-display:swap;src:url(fonts/figtree-latin-ext-700-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"IBM Plex Mono";font-weight:500;font-display:swap;src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"IBM Plex Mono";font-weight:500;font-display:swap;src:url(fonts/ibm-plex-mono-latin-ext-500-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"IBM Plex Mono";font-weight:600;font-display:swap;src:url(fonts/ibm-plex-mono-latin-600-normal.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"IBM Plex Mono";font-weight:600;font-display:swap;src:url(fonts/ibm-plex-mono-latin-ext-600-normal.woff2) format("woff2");unicode-range:U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html, body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+<style>
+/* Layout: tek sütunlu uygulama (max 720px); üstte yapışkan başlık, seyahat ekranında altta sabit eylem çubuğu; sonuç bir "fiş" olarak. */
+:root {
+  --bg: #f1f5f4;
+  --surface: #ffffff;
+  --surface-2: #e6eeec;
+  --fg: #142321;
+  --muted: #55625f;
+  --line: #cfdcd9;
+  --accent: #0f766e;
+  --accent-ink: #ffffff;
+  --accent-soft: #d5efea;
+  --accent-soft-ink: #0b4c46;
+  --pos: #047857;
+  --neg: #b42318;
+  --neg-soft: #fde8e6;
+  --shadow: 0 1px 2px rgba(15, 45, 40, .08), 0 2px 8px rgba(15, 45, 40, .06);
+  --font-display: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
+  --font-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1716; --surface: #15211f; --surface-2: #1d2c2a; --fg: #e3eeeb; --muted: #9db0ab;
+    --line: #2a3d3a; --accent: #4fd1bf; --accent-ink: #062b27; --accent-soft: #163f3a; --accent-soft-ink: #bdf2e9;
+    --pos: #6ee7b7; --neg: #ff8a80; --neg-soft: #3a1f1d;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 2px 10px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1716; --surface: #15211f; --surface-2: #1d2c2a; --fg: #e3eeeb; --muted: #9db0ab;
+  --line: #2a3d3a; --accent: #4fd1bf; --accent-ink: #062b27; --accent-soft: #163f3a; --accent-soft-ink: #bdf2e9;
+  --pos: #6ee7b7; --neg: #ff8a80; --neg-soft: #3a1f1d;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 2px 10px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-font-smoothing: antialiased;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+
+.app { max-width: 720px; margin: 0 auto; padding-block: 0 140px; }
+
+/* Üst çubuk */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--bg);
+  display: flex; align-items: center; gap: 8px;
+  padding-block: 14px 10px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 18px;
+}
+.top h1 { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; line-height: 1.15; margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+.top .titles { flex: 1; min-width: 0; }
+.top .sub { color: var(--muted); font-size: .85rem; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 10px; border: 1px solid transparent; background: transparent;
+  display: inline-grid; place-items: center; color: var(--fg); flex: none;
+}
+.icon-btn:hover { background: var(--surface-2); }
+.icon-btn svg { width: 22px; height: 22px; }
+
+/* Düğmeler */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 42px; padding: 0 18px; border-radius: 999px; border: 1px solid transparent;
+  font-weight: 600; font-size: .95rem; white-space: nowrap;
+}
+.btn svg { width: 18px; height: 18px; }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-primary:hover { filter: brightness(1.06); }
+.btn-tonal { background: var(--accent-soft); color: var(--accent-soft-ink); }
+.btn-outline { background: transparent; border-color: var(--line); color: var(--accent); }
+.btn-outline:hover { background: var(--surface-2); }
+.btn-text { background: transparent; color: var(--accent); padding: 0 10px; min-height: 36px; }
+.btn-danger { background: var(--neg); color: #fff; }
+.btn-big { min-height: 52px; font-size: 1.05rem; letter-spacing: .04em; }
+
+/* Kartlar */
+.card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.card h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; margin: 0; color: var(--accent); }
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.hint { color: var(--muted); font-size: .85rem; margin: 0; }
+.error { color: var(--neg); font-size: .85rem; margin: 0; }
+
+/* Form alanları */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label, .label { font-weight: 600; font-size: .9rem; }
+.label-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.input-wrap { display: flex; align-items: center; gap: 8px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 0 12px; min-height: 46px; }
+.input-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.input-wrap.invalid { border-color: var(--neg); }
+.input-wrap input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font-size: 1rem; padding: 10px 0; }
+.input-wrap .suffix { color: var(--muted); font-weight: 600; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .row2 { grid-template-columns: 1fr; } }
+
+/* Kişi çipleri */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px;
+  border-radius: 9px; border: 1px solid var(--line); background: transparent; font-weight: 600; font-size: .92rem;
+}
+.chip svg { width: 16px; height: 16px; }
+.chip.on { background: var(--accent-soft); border-color: var(--accent-soft); color: var(--accent-soft-ink); padding-left: 10px; }
+.chip.person { padding-right: 6px; cursor: default; }
+.chip.person button { border: 0; background: transparent; width: 26px; height: 26px; border-radius: 6px; display: grid; place-items: center; color: var(--muted); }
+.chip.person button:hover { background: var(--surface-2); color: var(--neg); }
+
+/* Masraf listesi */
+.list-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 6px 2px 0; flex-wrap: wrap; }
+.list-head h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; margin: 0; }
+.expense {
+  display: flex; align-items: center; gap: 10px; background: var(--surface); border-radius: 12px; box-shadow: var(--shadow);
+  padding: 12px 6px 12px 16px; border: 1px solid transparent; width: 100%; text-align: left;
+}
+.expense.clickable:hover { border-color: var(--line); }
+.expense.editing { border-color: var(--accent); background: var(--accent-soft); }
+.expense .body { flex: 1; min-width: 0; }
+.expense .t { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.expense .t i { color: var(--muted); font-weight: 500; }
+.expense .m { color: var(--muted); font-size: .84rem; }
+.expense .amt { font-weight: 600; white-space: nowrap; }
+.expense .no { color: var(--muted); font-weight: 500; }
+
+/* Seyahat kartları */
+.trip { display: flex; align-items: center; gap: 8px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 8px 16px 18px; }
+.trip .open { flex: 1; min-width: 0; text-align: left; background: transparent; border: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.trip .name { font-family: var(--font-display); font-weight: 600; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.trip .meta { color: var(--muted); font-size: .85rem; }
+.trip .total { font-size: 1.35rem; font-weight: 600; }
+.badge { display: inline-flex; align-items: center; gap: 4px; font-family: var(--font-body); font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 6px; }
+.badge svg { width: 12px; height: 12px; }
+.trip .name .badge { flex: none; }
+.badge.is-open { background: var(--accent-soft); color: var(--accent-soft-ink); }
+.badge.is-closed { background: var(--surface-2); color: var(--muted); }
+
+/* Uyarı / bilgi şeritleri */
+.note { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--surface-2); font-size: .9rem; }
+.note svg { width: 20px; height: 20px; flex: none; color: var(--muted); }
+.note .grow { flex: 1; min-width: 0; }
+
+/* Alt sabit eylem çubuğu */
+.bottom-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+  padding: 12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+}
+.bottom-bar .inner { max-width: 720px; margin: 0 auto; display: flex; gap: 12px; }
+.bottom-bar .inner .btn-primary { flex: 1; }
+
+/* Diyalog */
+.scrim { position: fixed; inset: 0; z-index: 20; background: rgba(5, 20, 18, .45); display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.dialog { background: var(--surface); color: var(--fg); border-radius: 22px; width: min(460px, 100%); max-height: 100%; overflow: auto; padding: 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+.dialog h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.35rem; margin: 0; text-wrap: balance; }
+.dialog .actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: .92rem; }
+.check input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); }
+
+/* Sonuç: fiş görünümü */
+.receipt { background: var(--surface); border-radius: var(--radius) var(--radius) 0 0; box-shadow: var(--shadow); padding: 22px 20px 26px; position: relative; }
+.receipt::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -10px; height: 10px;
+  background: linear-gradient(-45deg, transparent 7px, var(--surface) 0) 0 0 / 14px 10px repeat-x,
+              linear-gradient(45deg, transparent 7px, var(--surface) 0) 0 0 / 14px 10px repeat-x;
+}
+.receipt .kicker { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.receipt .grand { font-size: 2.1rem; font-weight: 600; line-height: 1.15; margin: 4px 0; }
+.dash { border: 0; border-top: 1.5px dashed var(--line); margin: 14px 0; }
+.debt { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px dotted var(--line); }
+.debt:last-child { border-bottom: 0; }
+.debt .who { display: inline-flex; align-items: center; gap: 6px; }
+.debt .p { background: var(--accent-soft); color: var(--accent-soft-ink); border-radius: 6px; padding: 2px 8px; font-weight: 700; font-size: .9rem; }
+.debt .arrow { color: var(--muted); width: 16px; height: 16px; }
+.debt .v { margin-left: auto; font-weight: 600; }
+.debt.strong .v { font-size: 1.12rem; }
+.table-wrap { overflow-x: auto; }
+table.sum { width: 100%; border-collapse: collapse; font-size: .9rem; }
+table.sum th { text-align: right; color: var(--muted); font-weight: 600; font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; padding: 6px 4px; border-bottom: 1px solid var(--line); }
+table.sum th:first-child, table.sum td:first-child { text-align: left; }
+table.sum td { text-align: right; padding: 8px 4px; border-bottom: 1px dotted var(--line); white-space: nowrap; }
+table.sum tr:last-child td { border-bottom: 0; }
+.pos { color: var(--pos); font-weight: 600; }
+.neg { color: var(--neg); font-weight: 600; }
+
+/* Boş durum */
+.empty { text-align: left; padding: 26px 22px; }
+.empty h2 { font-family: var(--font-display); font-size: 1.5rem; color: var(--fg); text-wrap: balance; }
+.empty .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Bildirim */
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(92px + env(safe-area-inset-bottom, 0px)); z-index: 30; background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: .9rem; max-width: calc(100% - 32px); display: flex; gap: 12px; align-items: center; box-shadow: 0 6px 20px rgba(0,0,0,.2); }
+.toast button { background: transparent; border: 0; color: var(--accent-soft); font-weight: 700; }
+
+.status { font-size: .8rem; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
+.status.cloud .dot { background: var(--pos); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .dialog { animation: pop .16s ease-out; }
+  @keyframes pop { from { transform: translateY(8px); opacity: .6; } to { transform: none; opacity: 1; } }
+}
+</style>
+
+</head>
+<body>
+<div class="app" id="app"></div>
+<div id="overlay"></div>
+
+<script>
+(() => {
+  'use strict';
+
+  // ---------- Sabitler ----------
+  const CURRENCIES = {
+    TRY: { label: 'Türk Lirası', symbol: '₺', decimals: 2 },
+    EUR: { label: 'Euro', symbol: '€', decimals: 2 },
+    USD: { label: 'ABD Doları', symbol: '$', decimals: 2 },
+    GBP: { label: 'İngiliz Sterlini', symbol: '£', decimals: 2 },
+    JPY: { label: 'Japon Yeni', symbol: '¥', decimals: 0 },
+    OTHER: { label: 'Diğer', symbol: '', decimals: 2 },
+  };
+  // Katanya listesi (57 masraf): [ödeyen, kuruş, açıklama, kimin için]
+  const KATANYA = [["BA",900,"Sigara",["AB"]],["AB",4000,"Taksi",["BA","SÇ","AB"]],["BA",6800,"İlk Akşam yemek",["BA","SÇ","AB"]],["BA",1050,"Vermut",["BA","SÇ","AB"]],["BA",5000,"Yürüyüş Turu",["BA","SÇ","AB"]],["BA",5250,"Kızarmış Balık",["BA","SÇ","AB","MY","DYY"]],["BA",1250,"Yemek",["BA","SÇ","AB","MY","DYY"]],["BA",1100,null,["AB"]],["BA",7312,"Bialetti",["AB"]],["BA",1710,"Nespresso",["BA"]],["BA",2000,"Pesto",["AB"]],["BA",4000,"Vermut",["BA","SÇ","AB","MY","DYY"]],["BA",727,"Market",["BA","SÇ"]],["BA",4553,"Veteriner",["BA","SÇ"]],["BA",18050,"Şarap Tadımı",["BA","SÇ","AB","MY","DYY"]],["BA",8250,"Tadım Sonrası İçim",["BA","SÇ","AB","MY","DYY"]],["BA",1750,"Sandviç",["BA","SÇ","AB","MY","DYY"]],["BA",460,null,["BA","SÇ"]],["BA",1500,null,["SÇ"]],["BA",1200,"We Are together  Kruvasan",["BA","SÇ","AB","MY","DYY"]],["AB",800,"KÜPE",["SÇ"]],["BA",600,"Papirüs",["SÇ","BA"]],["BA",600,"Magnet",["SÇ","BA"]],["BA",1300,"Kurabiye",["SÇ","BA"]],["DYY",12700,"Sirakuza Öğle Yemek",["BA","SÇ","AB","MY","DYY"]],["BA",800,"Kilise",["BA","SÇ","AB","DYY"]],["BA",2550,"Taormina Otobüs",["BA","SÇ","AB","MY","DYY"]],["BA",4800,"Sirakuza Otobüs",["BA","SÇ","AB","MY","DYY"]],["BA",3500,"Havaalanı Otobüs",["BA","SÇ","AB","MY","DYY"]],["BA",2320,"Sirakuza Aperol",["BA","SÇ","AB","MY","DYY"]],["DYY",9800,"Akşam Yemek",["BA","SÇ","AB","MY","DYY"]],["BA",2350,"Soğan",["SÇ","BA"]],["BA",1050,"Vermut",["AB","DYY","BA"]],["BA",950,"Sabah",["SÇ","BA"]],["BA",2700,"Tax",["BA","SÇ","AB"]],["BA",3000,"Teleferik",["BA","SÇ"]],["BA",14000,"Pizzacı",["BA","SÇ","AB","MY","DYY"]],["BA",7600,"Sefora",["SÇ"]],["BA",400,null,["SÇ","BA"]],["AB",4600,"İçki",["BA","SÇ","AB","MY","DYY"]],["AB",12210,"Yemek 3/5",["BA","AB","SÇ"]],["BA",2150,"Kahvaltı",["BA","SÇ"]],["BA",16500,"Şarap Tadımı",["BA","SÇ"]],["BA",3700,"Duvar",["BA","SÇ"]],["AB",23600,"Son Akşam Yemek",["BA","SÇ","AB","MY","DYY"]],["BA",1300,"Bambar",["BA","SÇ"]],["BA",2000,"Market",["BA","SÇ"]],["BA",12800,"Market",["BA","SÇ"]],["BA",1200,"Vergi",["BA","SÇ"]],["BA",1600,"Vergi",["BA","SÇ"]],["DYY",14700,"Son Öğlen Pizza",["BA","SÇ","AB","MY","DYY"]],["BA",23637,"OTEL",["AB"]],["BA",23637,"OTEL",["BA","SÇ"]],["BA",21855,"OTEL",["AB"]],["BA",21855,"OTEL",["BA","SÇ"]],["DYY",46565,"Etna Turu",["BA","SÇ","AB"]],["BA",2200,"Çıkış harcı",["SÇ"]]];
+  const LS_KEY = 'masraf-paylas-trips-v1';
+
+  const ICON = {
+    plus: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>',
+    check: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>',
+    close: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>',
+    back: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>',
+    arrow: '<svg class="arrow" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>',
+    edit: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>',
+    lock: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>',
+    copy: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>',
+    info: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>',
+  };
+
+  // ---------- Yardımcılar ----------
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const newId = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const symbolOf = (t) => t.currency === 'OTHER' ? ((t.customCurrency || '').trim() || '¤') : CURRENCIES[t.currency].symbol;
+  const decimalsOf = (t) => (CURRENCIES[t.currency] || CURRENCIES.EUR).decimals;
+  const currencyLabel = (t) => t.currency === 'OTHER' ? `${symbolOf(t)} (Diğer)` : `${CURRENCIES[t.currency].symbol} ${CURRENCIES[t.currency].label}`;
+  const totalOf = (t) => t.expenses.reduce((a, e) => a + e.cents, 0);
+
+  function money(t) {
+    const dec = decimalsOf(t), sym = symbolOf(t);
+    const nf = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    const fmt = (c) => nf.format(c / 100) + ' ' + sym;
+    return {
+      dec, sym,
+      fmt,
+      signed: (c) => c > 0 ? '+' + fmt(c) : c < 0 ? '−' + fmt(-c) : fmt(0),
+      parse(text) {
+        let s = String(text).replace(/\s/g, '');
+        if (!s) return null;
+        if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.');
+        else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
+        if (!/^\d+(\.\d+)?$/.test(s)) return null;
+        const f = 10 ** dec;
+        const v = Math.round(parseFloat(s) * f + 1e-9) / f;
+        if (!(v > 0)) return null;
+        return Math.round(v * 100);
+      },
+      toInput: (c) => (c / 100).toFixed(dec).replace('.', ','),
+    };
+  }
+
+  // Tarih: iki rakamdan sonra otomatik nokta → GG.AA.YYYY
+  function formatDateTyping(raw, deleting) {
+    const d = raw.replace(/\D/g, '').slice(0, 8);
+    let out = d.slice(0, 2);
+    if (d.length > 2 || (d.length === 2 && !deleting)) out += '.' + d.slice(2, 4);
+    if (d.length > 4 || (d.length === 4 && !deleting)) out += '.' + d.slice(4, 8);
+    return out;
+  }
+  function validDate(s) {
+    const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(s);
+    if (!m) return false;
+    const dd = +m[1], mm = +m[2], yy = +m[3];
+    const dt = new Date(yy, mm - 1, dd);
+    return dt.getFullYear() === yy && dt.getMonth() === mm - 1 && dt.getDate() === dd;
+  }
+  function today() {
+    const d = new Date();
+    return String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear();
+  }
+
+  // ---------- Hesaplama (Android / iOS sürümüyle aynı) ----------
+  function calculate(people, expenses, decimals) {
+    const unit = decimals >= 2 ? 1 : decimals === 1 ? 10 : 100;
+    const r = (x) => Math.round(x / unit) * unit;
+    const names = [];
+    const add = (n) => { if (!names.includes(n)) names.push(n); };
+    people.forEach(add);
+    expenses.forEach((e) => { add(e.payer); e.for.forEach(add); });
+    const idx = new Map(names.map((n, i) => [n, i]));
+    const n = names.length;
+    const gross = Array.from({ length: n }, () => new Array(n).fill(0));
+    const paid = new Array(n).fill(0), share = new Array(n).fill(0);
+    let total = 0, count = 0;
+    for (const e of expenses) {
+      const bens = [...new Set(e.for)];
+      if (!bens.length || !(e.cents > 0)) continue;
+      count++; total += e.cents;
+      const p = idx.get(e.payer);
+      paid[p] += e.cents;
+      const per = e.cents / bens.length;
+      for (const b of bens) {
+        const bi = idx.get(b);
+        share[bi] += per;
+        if (bi !== p) gross[bi][p] += per;
+      }
+    }
+    const net = [];
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+      const diff = gross[i][j] - gross[j][i];
+      const c = r(Math.abs(diff));
+      if (!c) continue;
+      net.push(diff > 0 ? { from: names[i], to: names[j], cents: c } : { from: names[j], to: names[i], cents: c });
+    }
+    net.sort((a, b) => idx.get(a.from) - idx.get(b.from) || b.cents - a.cents);
+    const bal = new Array(n).fill(0);
+    for (const d of net) { bal[idx.get(d.from)] -= d.cents; bal[idx.get(d.to)] += d.cents; }
+    const summaries = names.map((name, i) => ({ name, paid: paid[i], share: r(share[i]), balance: bal[i] }));
+    const grossList = [];
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      const c = r(gross[i][j]);
+      if (i !== j && c > 0) grossList.push({ from: names[i], to: names[j], cents: c });
+    }
+    const debtors = names.map((nm, i) => ({ nm, c: -bal[i] })).filter((x) => x.c > 0).sort((a, b) => b.c - a.c);
+    const creditors = names.map((nm, i) => ({ nm, c: bal[i] })).filter((x) => x.c > 0).sort((a, b) => b.c - a.c);
+    const minT = [];
+    let i = 0, j = 0;
+    while (i < debtors.length && j < creditors.length) {
+      const m = Math.min(debtors[i].c, creditors[j].c);
+      minT.push({ from: debtors[i].nm, to: creditors[j].nm, cents: m });
+      debtors[i].c -= m; creditors[j].c -= m;
+      if (!debtors[i].c) i++;
+      if (!creditors[j].c) j++;
+    }
+    return { total, count, net, summaries, gross: grossList, minT };
+  }
+
+  // ---------- Saklama: Claude hesabında (db) ya da bu tarayıcıda ----------
+  const store = {
+    trips: [],
+    ready: false,
+    loadingNote: false,
+  };
+
+  function loadLocal() {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      store.trips = raw ? JSON.parse(raw) : [];
+    } catch (e) { store.trips = store.trips || []; }
+  }
+  function saveLocal() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(store.trips)); } catch (e) { toast('Kaydedilemedi: tarayıcı depolamaya izin vermiyor.'); }
+  }
+
+  function persist() { saveLocal(); }
+  function removePersisted() { saveLocal(); }
+
+  function initStore() {
+    loadLocal();
+    store.ready = true;
+    render();
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+  }
+
+  // ---------- Durum ----------
+  const S = {
+    view: 'trips', tripId: null,
+    dialog: null,         // 'newTrip' | 'editTrip' | 'confirmClose' | {deleteTrip:id}
+    editingId: null,
+    f: { date: '', payer: null, amount: '', note: '', for: [] },
+    errors: false,
+    personName: '',
+  };
+  const trip = () => store.trips.find((t) => t.id === S.tripId) || null;
+
+  function updateTrip(id, fn) {
+    const i = store.trips.findIndex((t) => t.id === id);
+    if (i < 0) return;
+    const copy = JSON.parse(JSON.stringify(store.trips[i]));
+    fn(copy);
+    store.trips[i] = copy;
+    persist(copy);
+  }
+  function resetForm() { S.editingId = null; S.f = { date: '', payer: null, amount: '', note: '', for: [] }; S.errors = false; }
+
+  // ---------- Bildirim ----------
+  let toastTimer = null;
+  function toast(msg, actionLabel, action) {
+    const old = document.querySelector('.toast');
+    if (old) old.remove();
+    clearTimeout(toastTimer);
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.setAttribute('role', 'status');
+    const span = document.createElement('span'); span.textContent = msg; el.appendChild(span);
+    if (actionLabel) {
+      const b = document.createElement('button'); b.textContent = actionLabel;
+      b.onclick = () => { el.remove(); action(); };
+      el.appendChild(b);
+    }
+    document.body.appendChild(el);
+    toastTimer = setTimeout(() => el.remove(), 4500);
+  }
+
+  // ---------- Görünümler ----------
+  const app = document.getElementById('app');
+  const overlay = document.getElementById('overlay');
+
+  function statusBadge() {
+    return `<span class="status cloud"><span class="dot"></span>${navigator.onLine ? 'Bu cihazda saklanıyor' : 'İnternetsiz · bu cihazda saklanıyor'}</span>`;
+  }
+
+  function viewTrips() {
+    const trips = store.trips;
+    let h = `<header class="top"><div class="titles"><h1>Seyahatlerim</h1><div class="sub">${statusBadge()}</div></div>
+      <button class="btn btn-primary" data-act="newTrip">${ICON.plus}Yeni seyahat</button></header>`;
+    if (store.loadingNote) h += `<div class="note">${ICON.info}<span class="grow">Kayıtlı seyahatler henüz alınamadı. Bağlantı gelince liste kendiliğinden güncellenecek.</span></div><div style="height:12px"></div>`;
+    if (!trips.length) {
+      h += `<section class="card empty">
+        <h2>Ortak masrafları seyahat seyahat tutun</h2>
+        <p class="hint" style="font-size:.95rem">Her seyahat için bir başlık açın, para birimini seçin, kim neyi kimin için ödediyse girin. <b>Hesapla</b> dediğinizde kimin kime ne kadar ödeyeceği çıkar. Bitince <b>Kaydet ve kapat</b>, sonra sıradaki ülkeye geçin.</p>
+        <div class="actions">
+          <button class="btn btn-primary" data-act="newTrip">${ICON.plus}Yeni seyahat</button>
+          <button class="btn btn-outline" data-act="importKatanya">Katanya listesini yükle (57 masraf)</button>
+        </div>
+      </section>`;
+      return h.replace('</header>', '</header>' + installNote()) + backupCard();
+    }
+    h += installNote() + '<div class="stack">';
+    for (const t of trips) {
+      const m = money(t);
+      h += `<div class="trip">
+        <button class="open" data-act="openTrip" data-id="${esc(t.id)}">
+          <span class="name">${esc(t.title)} ${t.closed ? `<span class="badge is-closed">${ICON.lock}Kapalı</span>` : '<span class="badge is-open">Açık</span>'}</span>
+          <span class="meta">${esc(currencyLabel(t))} · ${t.people.length} kişi · ${t.expenses.length} masraf</span>
+          <span class="total num">${esc(m.fmt(totalOf(t)))}</span>
+        </button>
+        <button class="icon-btn" data-act="askDeleteTrip" data-id="${esc(t.id)}" aria-label="${esc(t.title)} seyahatini sil">${ICON.trash}</button>
+      </div>`;
+    }
+    h += '</div>' + backupCard();
+    return h;
+  }
+
+  function backupCard() {
+    return `<div style="height:18px"></div><section class="card"><h2>Yedek</h2>
+      <p class="hint">Veriler yalnızca bu cihazda duruyor. Telefon değiştirirken ya da uygulamayı silmeden önce yedek alın.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-outline" data-act="exportBackup">Yedeği indir</button>
+        <button class="btn btn-outline" data-act="importBackup">Yedekten yükle</button>
+        <input type="file" id="backupFile" accept=".json,application/json" hidden>
+      </div></section>`;
+  }
+
+  let installEvent = null;
+  window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); installEvent = e; render(); });
+  const isStandalone = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  function installNote() {
+    if (isStandalone()) return '';
+    if (installEvent) return `<div class="note">${ICON.info}<span class="grow">Uygulama gibi kullanmak ve internetsiz açmak için ana ekrana ekleyin.</span><button class="btn btn-tonal" data-act="install">Yükle</button></div><div style="height:12px"></div>`;
+    if (isIOS()) return `<div class="note">${ICON.info}<span class="grow">Ana ekrana eklemek için Safari'de <b>Paylaş</b> simgesine, sonra <b>Ana Ekrana Ekle</b>'ye dokunun.</span></div><div style="height:12px"></div>`;
+    return '';
+  }
+
+  function viewTrip(t) {
+    const m = money(t);
+    const f = S.f;
+    const allOn = t.people.length > 0 && t.people.every((p) => f.for.includes(p));
+    const amountCents = m.parse(f.amount);
+    const dateBad = f.date && !validDate(f.date);
+    let h = `<header class="top">
+      <button class="icon-btn" data-act="home" aria-label="Seyahatlerim">${ICON.back}</button>
+      <div class="titles"><h1>${esc(t.title)}</h1><div class="sub"><span>${esc(currencyLabel(t))}</span>${t.closed ? `<span class="badge is-closed">${ICON.lock}Kapalı</span>` : ''}</div></div>
+      <button class="icon-btn" data-act="editTrip" aria-label="Başlık ve para birimi">${ICON.edit}</button>
+    </header><div class="stack">`;
+
+    if (t.closed) {
+      h += `<div class="note">${ICON.lock}<span class="grow">Bu seyahat kaydedilip kapatıldı. Masraflar yalnızca görüntülenebilir.</span><button class="btn btn-text" data-act="reopen">Yeniden aç</button></div>`;
+    } else {
+      // Kişiler
+      h += `<section class="card"><h2>Kişiler</h2>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="input-wrap" style="flex:1"><input id="personName" placeholder="Kişi adı (örn. BA)" maxlength="20" value="${esc(S.personName)}" autocomplete="off" aria-label="Kişi adı"></div>
+          <button class="btn btn-tonal" data-act="addPerson">${ICON.plus}Ekle</button>
+        </div>
+        ${t.people.length ? `<div class="chips">${t.people.map((p) => `<span class="chip person">${esc(p)}<button data-act="removePerson" data-name="${esc(p)}" aria-label="${esc(p)} kişisini sil">${ICON.close}</button></span>`).join('')}</div>`
+          : '<p class="hint">Masrafa katılan kişileri ekleyin.</p>'}
+      </section>`;
+
+      // Masraf formu
+      h += `<section class="card" id="formCard"><h2>${S.editingId ? 'Masrafı düzenle' : 'Yeni masraf'}</h2>
+        <div class="row2">
+          <div class="field"><label for="fDate">Tarih <span class="hint">(isteğe bağlı)</span></label>
+            <div class="input-wrap${dateBad && S.errors ? ' invalid' : ''}"><input id="fDate" inputmode="numeric" placeholder="GG.AA.YYYY" maxlength="10" value="${esc(f.date)}" autocomplete="off"><button class="btn btn-text" data-act="today" type="button">Bugün</button></div>
+            ${dateBad && S.errors ? '<p class="error">Tarihi GG.AA.YYYY olarak girin (örn. 14.10.2026).</p>' : ''}
+          </div>
+          <div class="field"><label for="fAmount">Ne kadar ödedi? *</label>
+            <div class="input-wrap${S.errors && amountCents == null ? ' invalid' : ''}"><input id="fAmount" class="num" inputmode="decimal" placeholder="${m.dec === 0 ? 'örn. 1500' : 'örn. 12,50'}" value="${esc(f.amount)}" autocomplete="off"><span class="suffix">${esc(m.sym)}</span></div>
+            ${S.errors && amountCents == null ? '<p class="error">Geçerli bir tutar girin.</p>' : ''}
+          </div>
+        </div>
+        <div class="field"><span class="label">Kim ödedi? *</span>
+          ${t.people.length ? `<div class="chips">${t.people.map((p) => `<button class="chip${f.payer === p ? ' on' : ''}" data-act="payer" data-name="${esc(p)}" aria-pressed="${f.payer === p}">${f.payer === p ? ICON.check : ''}${esc(p)}</button>`).join('')}</div>` : '<p class="error">Önce yukarıdan kişi ekleyin.</p>'}
+          ${S.errors && !f.payer ? '<p class="error">Ödeyen kişiyi seçin.</p>' : ''}
+        </div>
+        <div class="field"><label for="fNote">Açıklama <span class="hint">(isteğe bağlı)</span></label>
+          <div class="input-wrap"><input id="fNote" placeholder="örn. Akşam yemeği" maxlength="60" value="${esc(f.note)}" autocomplete="off"></div>
+        </div>
+        <div class="field">
+          <div class="label-row"><span class="label">Kimin için ödedi? *</span>${t.people.length ? `<button class="btn btn-text" data-act="allFor">${allOn ? 'Hiçbiri' : 'Hepsi'}</button>` : ''}</div>
+          <div class="chips">${t.people.map((p) => { const on = f.for.includes(p); return `<button class="chip${on ? ' on' : ''}" data-act="for" data-name="${esc(p)}" aria-pressed="${on}">${on ? ICON.check : ''}${esc(p)}</button>`; }).join('')}</div>
+          ${S.errors && !f.for.length ? '<p class="error">En az bir kişi seçin.</p>' : ''}
+          <p class="hint num" id="perPerson">${perPersonText(t)}</p>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          ${S.editingId ? '<button class="btn btn-outline" data-act="cancelEdit">Vazgeç</button>' : ''}
+          <button class="btn btn-tonal" style="flex:1" data-act="submit">${S.editingId ? ICON.check + 'Güncelle' : ICON.plus + 'Masrafı ekle'}</button>
+        </div>
+      </section>`;
+    }
+
+    // Masraf listesi
+    h += `<div class="list-head"><h2>Masraflar (${t.expenses.length})</h2><span class="hint num">Toplam ${esc(m.fmt(totalOf(t)))}</span></div>`;
+    if (!t.expenses.length) h += '<p class="hint">Henüz masraf yok.</p>';
+    const rows = t.expenses.map((e, i) => ({ e, no: i + 1 })).reverse();
+    for (const { e, no } of rows) {
+      const inner = `<span class="body">
+          <span class="t" style="display:block"><span class="no">${no}.</span> ${e.note ? esc(e.note) : '<i>Açıklama yok</i>'}</span>
+          <span class="m" style="display:block">${e.date ? esc(e.date) + ' · ' : ''}Ödeyen: ${esc(e.payer)}</span>
+          <span class="m" style="display:block">Kimin için: ${esc(e.for.join(', '))}</span>
+        </span>
+        <span class="amt num">${esc(m.fmt(e.cents))}</span>`;
+      if (t.closed) {
+        h += `<div class="expense" style="padding-right:16px">${inner}</div>`;
+      } else {
+        h += `<div class="expense clickable${S.editingId === e.id ? ' editing' : ''}">
+          <button data-act="editExpense" data-id="${esc(e.id)}" style="all:unset;display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer" aria-label="Masrafı düzenle">${inner}</button>
+          <button class="icon-btn" data-act="deleteExpense" data-id="${esc(e.id)}" aria-label="Masrafı sil">${ICON.trash}</button>
+        </div>`;
+      }
+    }
+    h += '</div>';
+    h += `<div class="bottom-bar"><div class="inner">
+      ${t.closed ? '' : '<button class="btn btn-outline btn-big" data-act="askClose">Kaydet ve kapat</button>'}
+      <button class="btn btn-primary btn-big" data-act="calculate">HESAPLA</button>
+    </div></div>`;
+    return h;
+  }
+
+  function perPersonText(t) {
+    const m = money(t);
+    const c = m.parse(S.f.amount);
+    if (c == null || !S.f.for.length) return '';
+    return `Kişi başı pay: ${m.fmt(Math.round(c / S.f.for.length))} (${S.f.for.length} kişi)`;
+  }
+
+  function debtRows(list, m, strong) {
+    return list.map((d) => `<div class="debt${strong ? ' strong' : ''}"><span class="who"><span class="p">${esc(d.from)}</span>${ICON.arrow}<span class="p">${esc(d.to)}</span></span><span class="v num">${esc(m.fmt(d.cents))}</span></div>`).join('');
+  }
+
+  function viewResult(t) {
+    const m = money(t);
+    const r = calculate(t.people, t.expenses, m.dec);
+    let h = `<header class="top">
+      <button class="icon-btn" data-act="backToTrip" aria-label="Seyahate dön">${ICON.back}</button>
+      <div class="titles"><h1>Hesap Sonucu</h1><div class="sub">${esc(t.title)}</div></div>
+      <button class="btn btn-tonal" data-act="copyResult">${ICON.copy}Kopyala</button>
+    </header><div class="stack">`;
+    h += `<section class="receipt">
+      <div class="kicker">Toplam harcama</div>
+      <div class="grand num">${esc(m.fmt(r.total))}</div>
+      <div class="hint">${r.count} masraf · ${r.summaries.length} kişi · ${esc(currencyLabel(t))}</div>
+      <hr class="dash">
+      <div class="kicker" style="margin-bottom:4px">Kim kime ne kadar ödeyecek?</div>
+      ${r.net.length ? debtRows(r.net, m, true) : '<p>Borç yok, herkes ödeşmiş görünüyor.</p>'}
+      <hr class="dash">
+      <p class="hint">Karşılıklı borçlar mahsup edildi. Bu ${r.net.length} ödeme yapıldığında herkes ödeşmiş olur.</p>
+    </section>
+    <div style="height:6px"></div>`;
+    h += `<section class="card"><h2>Kişi bazında özet</h2><div class="table-wrap"><table class="sum">
+      <thead><tr><th>Kişi</th><th>Ödediği</th><th>Payı</th><th>Bakiye</th></tr></thead><tbody>
+      ${r.summaries.map((s) => `<tr><td><b>${esc(s.name)}</b></td><td class="num">${esc(m.fmt(s.paid))}</td><td class="num">${esc(m.fmt(s.share))}</td><td class="num ${s.balance > 0 ? 'pos' : s.balance < 0 ? 'neg' : ''}">${esc(m.signed(s.balance))}</td></tr>`).join('')}
+      </tbody></table></div><p class="hint">Bakiye = ödediği − payına düşen. Artı: alacaklı, eksi: borçlu.</p></section>`;
+    h += `<section class="card"><h2>Brüt borçlar (mahsup öncesi)</h2><p class="hint">Soldaki kişinin, sağdakinin ödediği masraflardan doğan borcu.</p><div>${debtRows(r.gross, m, false)}</div></section>`;
+    h += `<section class="card"><h2>Alternatif: En az transferle kapatma</h2><p class="hint">Kimin kime ödediği önemli değilse aynı bakiyeler ${r.minT.length} transferle de kapanır.</p><div>${debtRows(r.minT, m, false)}</div></section>`;
+    h += `<p class="hint" style="padding:0 4px">Yöntem: Her masraf, "kimin için" seçilen kişilere eşit bölünür. Listede olup masrafı ödemeyen herkes, kendi payı kadar ödeyene borçlanır. Kendi için yapılan masraf borç oluşturmaz.</p>`;
+    h += '</div>';
+    return h;
+  }
+
+  function resultText(t) {
+    const m = money(t);
+    const r = calculate(t.people, t.expenses, m.dec);
+    const lines = [`${t.title} – Masraf Paylaşım Hesabı`, `Toplam: ${m.fmt(r.total)} (${r.count} masraf)`, '', 'Kim kime ne kadar ödeyecek:'];
+    r.net.forEach((d) => lines.push(`• ${d.from} → ${d.to}: ${m.fmt(d.cents)}`));
+    lines.push('', 'Kişi bazında bakiye:');
+    r.summaries.forEach((s) => lines.push(`• ${s.name}: ${m.signed(s.balance)}`));
+    return lines.join('\n');
+  }
+
+  // ---------- Diyaloglar ----------
+  function dialogTrip(initial) {
+    const lastPeople = (store.trips[0] && store.trips[0].people) || [];
+    const d = S.td;
+    const isNew = !initial;
+    const valid = d.title.trim() && (d.currency !== 'OTHER' || d.custom.trim());
+    return `<div class="scrim" data-act="closeDialog"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlgTitle" data-stop>
+      <h3 id="dlgTitle">${isNew ? 'Yeni seyahat' : 'Seyahati düzenle'}</h3>
+      <div class="field"><label for="tdTitle">Seyahat başlığı *</label><div class="input-wrap"><input id="tdTitle" placeholder="örn. İtalya" maxlength="40" value="${esc(d.title)}" autocomplete="off"></div></div>
+      <div class="field"><span class="label">Para birimi</span>
+        <div class="chips">${Object.keys(CURRENCIES).map((c) => `<button class="chip${d.currency === c ? ' on' : ''}" data-act="tdCurrency" data-cur="${c}" aria-pressed="${d.currency === c}">${d.currency === c ? ICON.check : ''}${c === 'OTHER' ? 'Diğer' : CURRENCIES[c].symbol + ' ' + c}</button>`).join('')}</div>
+        <p class="hint">${d.currency === 'OTHER' ? 'Kendi para biriminizi yazın.' : esc(CURRENCIES[d.currency].label) + (d.currency === 'JPY' ? ' (kuruşsuz; tutarlar tam sayıya yuvarlanır)' : '')}</p>
+      </div>
+      ${d.currency === 'OTHER' ? `<div class="field"><label for="tdCustom">Para birimi kodu / simgesi *</label><div class="input-wrap"><input id="tdCustom" placeholder="örn. CHF" maxlength="6" value="${esc(d.custom)}" autocomplete="off"></div></div>` : ''}
+      ${isNew && lastPeople.length ? `<label class="check"><input type="checkbox" id="tdCopy" ${d.copy ? 'checked' : ''}><span>Kişileri önceki seyahatten al (${esc(lastPeople.join(', '))})</span></label>` : ''}
+      <div class="actions"><button class="btn btn-text" data-act="closeDialog">İptal</button><button class="btn btn-primary" data-act="saveTrip" ${valid ? '' : 'disabled style="opacity:.5;cursor:not-allowed"'}>${isNew ? 'Oluştur' : 'Kaydet'}</button></div>
+    </div></div>`;
+  }
+
+  function renderOverlay() {
+    const t = trip();
+    let h = '';
+    if (S.dialog === 'newTrip') h = dialogTrip(null);
+    else if (S.dialog === 'editTrip' && t) h = dialogTrip(t);
+    else if (S.dialog === 'confirmClose' && t) {
+      h = `<div class="scrim" data-act="closeDialog"><div class="dialog" role="dialog" aria-modal="true" data-stop>
+        <h3>"${esc(t.title)}" kaydedilip kapatılsın mı?</h3>
+        <p style="margin:0">Masraflar saklanır, hesap her zaman görüntülenebilir. Kapalı seyahate yeni masraf girilmez; gerekirse yeniden açabilirsiniz.</p>
+        <div class="actions"><button class="btn btn-text" data-act="closeDialog">İptal</button><button class="btn btn-primary" data-act="closeTrip">Kaydet ve kapat</button></div>
+      </div></div>`;
+    } else if (S.dialog && S.dialog.deleteTrip) {
+      const dt = store.trips.find((x) => x.id === S.dialog.deleteTrip);
+      if (dt) h = `<div class="scrim" data-act="closeDialog"><div class="dialog" role="dialog" aria-modal="true" data-stop>
+        <h3>"${esc(dt.title)}" silinsin mi?</h3>
+        <p style="margin:0">${dt.expenses.length} masrafıyla birlikte kalıcı olarak silinecek.</p>
+        <div class="actions"><button class="btn btn-text" data-act="closeDialog">İptal</button><button class="btn btn-danger" data-act="deleteTrip" data-id="${esc(dt.id)}">Sil</button></div>
+      </div></div>`;
+    }
+    overlay.innerHTML = h;
+    const first = overlay.querySelector('input');
+    if (first && !overlay.contains(document.activeElement)) first.focus();
+  }
+
+  // ---------- Çizim ----------
+  function render() {
+    if (!store.ready) return;
+    const t = trip();
+    if (S.view !== 'trips' && !t) { S.view = 'trips'; S.tripId = null; }
+    if (S.view === 'trips') app.innerHTML = viewTrips();
+    else if (S.view === 'trip') app.innerHTML = viewTrip(t);
+    else app.innerHTML = viewResult(t);
+    renderOverlay();
+  }
+
+  // ---------- İşlemler ----------
+  function openTripDialog(kind) {
+    const t = kind === 'editTrip' ? trip() : null;
+    const lastPeople = (store.trips[0] && store.trips[0].people) || [];
+    S.td = t ? { title: t.title, currency: t.currency, custom: t.customCurrency || '', copy: false }
+             : { title: '', currency: 'TRY', custom: '', copy: lastPeople.length > 0 };
+    S.dialog = kind;
+    renderOverlay();
+  }
+
+  function saveTripDialog() {
+    const d = S.td;
+    const title = d.title.trim();
+    if (!title || (d.currency === 'OTHER' && !d.custom.trim())) return;
+    const custom = d.currency === 'OTHER' ? d.custom.trim().slice(0, 6) : null;
+    if (S.dialog === 'newTrip') {
+      const lastPeople = (store.trips[0] && store.trips[0].people) || [];
+      const t = { id: newId('t'), title, currency: d.currency, customCurrency: custom, people: d.copy ? lastPeople.slice() : [], expenses: [], closed: false, createdAt: Date.now() };
+      store.trips.unshift(t);
+      persist(t);
+      S.tripId = t.id; S.view = 'trip'; resetForm();
+    } else {
+      updateTrip(S.tripId, (t) => { t.title = title; t.currency = d.currency; t.customCurrency = custom; });
+      S.f.amount = '';
+    }
+    S.dialog = null;
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  function addPerson() {
+    const t = trip(); if (!t) return;
+    const name = S.personName.trim().slice(0, 20);
+    if (!name) return;
+    if (t.people.some((p) => p.toLocaleLowerCase('tr') === name.toLocaleLowerCase('tr'))) { toast(`${name} zaten listede.`); return; }
+    updateTrip(t.id, (x) => x.people.push(name));
+    S.personName = '';
+    render();
+    const inp = document.getElementById('personName'); if (inp) inp.focus();
+  }
+
+  function submit() {
+    const t = trip(); if (!t) return;
+    const m = money(t);
+    const f = S.f;
+    const cents = m.parse(f.amount);
+    const dateOk = !f.date || validDate(f.date);
+    if (!f.payer || cents == null || !f.for.length || !dateOk) { S.errors = true; render(); toast('Lütfen zorunlu alanları kontrol edin.'); return; }
+    const e = { id: S.editingId || newId('e'), date: f.date || null, payer: f.payer, cents, note: f.note.trim() || null, for: t.people.filter((p) => f.for.includes(p)) };
+    const editing = !!S.editingId;
+    updateTrip(t.id, (x) => {
+      const i = x.expenses.findIndex((y) => y.id === e.id);
+      if (i >= 0) x.expenses[i] = e; else x.expenses.push(e);
+    });
+    resetForm();
+    render();
+    toast(editing ? 'Masraf güncellendi.' : 'Masraf eklendi.');
+    const amt = document.getElementById('fAmount'); if (amt && !editing) amt.focus();
+  }
+
+  function importKatanya() {
+    const ppl = ['BA', 'AB', 'DYY', 'MY', 'SÇ'];
+    const t = {
+      id: newId('t'), title: 'İtalya – Katanya', currency: 'EUR', customCurrency: null, people: ppl,
+      expenses: KATANYA.map(([payer, cents, note, forList], i) => ({ id: 'e' + (i + 1).toString(36) + Math.random().toString(36).slice(2, 6), date: null, payer, cents, note, for: ppl.filter((p) => forList.includes(p)) })),
+      closed: false, createdAt: Date.now(),
+    };
+    store.trips.unshift(t);
+    persist(t);
+    S.tripId = t.id; S.view = 'trip'; resetForm();
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  async function copyResult() {
+    const t = trip(); if (!t) return;
+    const text = resultText(t);
+    try {
+      await navigator.clipboard.writeText(text);
+      toast('Sonuç kopyalandı; WhatsApp\'a yapıştırabilirsiniz.');
+    } catch (e) {
+      S.dialog = null;
+      overlay.innerHTML = `<div class="scrim" data-act="closeDialog"><div class="dialog" data-stop><h3>Sonucu kopyalayın</h3><p class="hint" style="margin:0">Metin seçildi; Ctrl+C (telefonda Kopyala) ile kopyalayın.</p><textarea id="copyArea" rows="10" style="width:100%;font:inherit;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);color:var(--fg)">${esc(text)}</textarea><div class="actions"><button class="btn btn-primary" data-act="closeDialog">Tamam</button></div></div></div>`;
+      const ta = document.getElementById('copyArea'); ta.focus(); ta.select();
+    }
+  }
+
+  // ---------- Olaylar ----------
+  document.addEventListener('click', (ev) => {
+    const el = ev.target.closest('[data-act]');
+    if (!el) return;
+    const act = el.dataset.act;
+    if (act === 'closeDialog' && el.classList.contains('scrim') && ev.target.closest('[data-stop]')) return;
+    const t = trip();
+    switch (act) {
+      case 'newTrip': openTripDialog('newTrip'); break;
+      case 'editTrip': openTripDialog('editTrip'); break;
+      case 'closeDialog': S.dialog = null; renderOverlay(); break;
+      case 'tdCurrency': S.td.currency = el.dataset.cur; renderOverlay(); break;
+      case 'saveTrip': saveTripDialog(); break;
+      case 'importKatanya': importKatanya(); break;
+      case 'openTrip': S.tripId = el.dataset.id; S.view = 'trip'; resetForm(); S.personName = ''; render(); window.scrollTo(0, 0); break;
+      case 'askDeleteTrip': S.dialog = { deleteTrip: el.dataset.id }; renderOverlay(); break;
+      case 'deleteTrip': {
+        const id = el.dataset.id;
+        store.trips = store.trips.filter((x) => x.id !== id);
+        removePersisted(id);
+        S.dialog = null; render(); toast('Seyahat silindi.');
+        break;
+      }
+      case 'home': S.view = 'trips'; S.tripId = null; render(); window.scrollTo(0, 0); break;
+      case 'addPerson': addPerson(); break;
+      case 'removePerson': {
+        const name = el.dataset.name;
+        if (t.expenses.some((e) => e.payer === name || e.for.includes(name))) { toast(`${name} masraflarda geçtiği için silinemez.`); break; }
+        updateTrip(t.id, (x) => { x.people = x.people.filter((p) => p !== name); });
+        if (S.f.payer === name) S.f.payer = null;
+        S.f.for = S.f.for.filter((p) => p !== name);
+        render();
+        break;
+      }
+      case 'payer': S.f.payer = el.dataset.name; render(); break;
+      case 'for': {
+        const n = el.dataset.name;
+        S.f.for = S.f.for.includes(n) ? S.f.for.filter((p) => p !== n) : S.f.for.concat(n);
+        render(); break;
+      }
+      case 'allFor': S.f.for = t.people.every((p) => S.f.for.includes(p)) ? [] : t.people.slice(); render(); break;
+      case 'today': S.f.date = today(); render(); break;
+      case 'submit': submit(); break;
+      case 'cancelEdit': resetForm(); render(); break;
+      case 'editExpense': {
+        const e = t.expenses.find((x) => x.id === el.dataset.id); if (!e) break;
+        const m = money(t);
+        S.editingId = e.id;
+        S.f = { date: e.date || '', payer: e.payer, amount: m.toInput(e.cents), note: e.note || '', for: e.for.slice() };
+        S.errors = false;
+        render();
+        document.getElementById('formCard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        break;
+      }
+      case 'deleteExpense': {
+        const id = el.dataset.id;
+        const pos = t.expenses.findIndex((x) => x.id === id);
+        const removed = t.expenses[pos];
+        updateTrip(t.id, (x) => { x.expenses = x.expenses.filter((y) => y.id !== id); });
+        if (S.editingId === id) resetForm();
+        render();
+        toast('Masraf silindi.', 'Geri al', () => {
+          updateTrip(t.id, (x) => { x.expenses.splice(Math.min(pos, x.expenses.length), 0, removed); });
+          render();
+        });
+        break;
+      }
+      case 'askClose': S.dialog = 'confirmClose'; renderOverlay(); break;
+      case 'closeTrip': updateTrip(t.id, (x) => { x.closed = true; }); S.dialog = null; S.view = 'trips'; S.tripId = null; render(); toast(`"${t.title}" kaydedildi ve kapatıldı.`); break;
+      case 'reopen': updateTrip(t.id, (x) => { x.closed = false; }); render(); break;
+      case 'calculate':
+        if (!t.expenses.length) { toast('Hesaplamak için önce masraf ekleyin.'); break; }
+        S.view = 'result'; render(); window.scrollTo(0, 0); break;
+      case 'backToTrip': S.view = 'trip'; render(); window.scrollTo(0, 0); break;
+      case 'copyResult': copyResult(); break;
+      case 'install': if (installEvent) { const ev = installEvent; ev.prompt(); ev.userChoice.finally(() => { installEvent = null; render(); }); } break;
+      case 'exportBackup': exportBackup(); break;
+      case 'importBackup': document.getElementById('backupFile').click(); break;
+    }
+  });
+
+  document.addEventListener('input', (ev) => {
+    const el = ev.target;
+    switch (el.id) {
+      case 'personName': S.personName = el.value; break;
+      case 'fDate': {
+        const deleting = (ev.inputType || '').startsWith('delete');
+        const v = formatDateTyping(el.value, deleting);
+        el.value = v; S.f.date = v;
+        break;
+      }
+      case 'fAmount': {
+        el.value = el.value.replace(/[^\d.,]/g, '');
+        S.f.amount = el.value;
+        const t = trip(); const pp = document.getElementById('perPerson');
+        if (t && pp) pp.textContent = perPersonText(t);
+        break;
+      }
+      case 'fNote': S.f.note = el.value; break;
+      case 'tdTitle': S.td.title = el.value; refreshDialogButton(); break;
+      case 'tdCustom': S.td.custom = el.value.toUpperCase(); el.value = S.td.custom; refreshDialogButton(); break;
+    }
+  });
+  document.addEventListener('change', (ev) => {
+    if (ev.target.id === 'tdCopy') S.td.copy = ev.target.checked;
+    if (ev.target.id === 'backupFile' && ev.target.files[0]) importBackup(ev.target.files[0]);
+  });
+
+  function exportBackup() {
+    const data = JSON.stringify({ app: 'masraf-paylas', version: 1, exportedAt: new Date().toISOString(), trips: store.trips }, null, 1);
+    const d = new Date();
+    const name = `masraf-paylas-yedek-${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}.json`;
+    const file = new File([data], name, { type: 'application/json' });
+    if (isIOS() && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: 'Masraf Paylaş yedeği' }).catch(() => {});
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    toast('Yedek indirildi.');
+  }
+
+  function importBackup(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const obj = JSON.parse(reader.result);
+        const list = Array.isArray(obj) ? obj : obj.trips;
+        if (!Array.isArray(list)) throw new Error('format');
+        let added = 0, updated = 0;
+        for (const t of list) {
+          if (!t || !t.id || !t.title || !Array.isArray(t.expenses) || !Array.isArray(t.people)) continue;
+          const i = store.trips.findIndex((x) => x.id === t.id);
+          if (i >= 0) { store.trips[i] = t; updated++; } else { store.trips.push(t); added++; }
+        }
+        store.trips.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        saveLocal(); render();
+        toast(`Yedek yüklendi: ${added} yeni, ${updated} güncellenen seyahat.`);
+      } catch (e) { toast('Bu dosya bir Masraf Paylaş yedeği değil.'); }
+    };
+    reader.readAsText(file);
+    document.getElementById('backupFile').value = '';
+  }
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') {
+      if (ev.target.id === 'personName') { ev.preventDefault(); addPerson(); }
+      else if (['fAmount', 'fNote', 'fDate'].includes(ev.target.id)) { ev.preventDefault(); submit(); }
+      else if (ev.target.id === 'tdTitle' || ev.target.id === 'tdCustom') { ev.preventDefault(); saveTripDialog(); }
+    } else if (ev.key === 'Escape' && S.dialog) { S.dialog = null; renderOverlay(); }
+  });
+  function refreshDialogButton() {
+    const b = overlay.querySelector('[data-act="saveTrip"]'); if (!b) return;
+    const d = S.td; const ok = d.title.trim() && (d.currency !== 'OTHER' || d.custom.trim());
+    b.disabled = !ok; b.style.opacity = ok ? '' : '.5'; b.style.cursor = ok ? '' : 'not-allowed';
+  }
+
+  window.addEventListener('online', render);
+  window.addEventListener('offline', render);
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    const hadController = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.register('sw.js').then((reg) => {
+      reg.addEventListener('updatefound', () => {
+        const w = reg.installing;
+        if (!w) return;
+        w.addEventListener('statechange', () => {
+          if (w.state === 'activated' && hadController) {
+            toast('Yeni sürüm hazır.', 'Yenile', () => location.reload());
+          }
+        });
+      });
+    }).catch(() => {});
+  }
+
+  initStore();
+})();
+</script>
+</body>
+</html>
